@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * 'module/${rootArtifactid}/${rootArtifactid}Link.form'.
  */
 @Controller("${rootrootArtifactid}.ArdenRemindersController")
-@RequestMapping(value = "module/${rootArtifactid}/${rootArtifactid}.form")
+@RequestMapping(value = "module/ardenreminders/manage.form")
 public class ArdenRemindersController {
 	
 	/** Logger for this class and subclasses */
@@ -39,7 +39,7 @@ public class ArdenRemindersController {
 	UserService userService;
 	
 	/** Success form view name */
-	private final String VIEW = "/module/${rootArtifactid}/${rootArtifactid}";
+	private final String VIEW = "/module/ardenreminders/manage";
 	
 	/**
 	 * Initially called after the getUsers method to get the landing form name

@@ -12,9 +12,11 @@ package org.openmrs.module.ardenreminders.api.dao;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.ardenreminders.Item;
+import org.openmrs.module.ardenreminders.Mlm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository("ardenreminders.ArdenRemindersDao")
 public class ArdenRemindersDao {
@@ -26,12 +28,21 @@ public class ArdenRemindersDao {
 		return sessionFactory.getCurrentSession();
 	}
 	
-	public Item getItemByUuid(String uuid) {
-		return (Item) getSession().createCriteria(Item.class).add(Restrictions.eq("uuid", uuid)).uniqueResult();
+	public List<Mlm> listMlms() {
+		return (List<Mlm>) getSession().createCriteria(Mlm.class).list();
 	}
 	
-	public Item saveItem(Item item) {
-		getSession().saveOrUpdate(item);
-		return item;
+	public Mlm getMlmByUuid(String uuid) {
+		return (Mlm) getSession().createCriteria(Mlm.class).add(Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+	
+	public Mlm saveMlm(Mlm mlm) {
+		getSession().saveOrUpdate(mlm);
+		
+		return mlm;
+	}
+	
+	public void deleteMlm(Mlm mlm) {
+		getSession().delete(mlm);
 	}
 }

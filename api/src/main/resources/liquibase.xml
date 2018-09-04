@@ -13,27 +13,41 @@
         for a list of supported elements and attributes
     -->
  
- 	<!-- Uncomment the changeset below if you want to make the Item class persistable, see also Item and ArdenRemindersDaoTest -->
- 	<!--
+
 	<changeSet id="ardenreminders-2016-08-02-12-21" author="raff">
 		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="ardenreminders_item"/></not>
+			<not><tableExists tableName="ardenreminders_mlm"/></not>
 		</preConditions>
 		<comment>
-			Creating the ardenreminders_item table
+			Creating the ardenreminders_mlm table
 		</comment>
-		<createTable tableName="ardenreminders_item">
-			<column name="ardenreminders_item_id" type="int" autoIncrement="true">
+		<createTable tableName="ardenreminders_mlm">
+			<column name="ardenreminders_mlm_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="uuid" type="char(38)">
-				<constraints nullable="false" unique="true"></constraints>
+				<constraints nullable="false" unique="true" />
 			</column>
-			<column name="owner" type="int" />
-			<column name="description" type="varchar(255)" />
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true" />
+			</column>
+            <column name="source" type="clob" />
+            <column name="evoke" type="boolean" defaultValueBoolean="false" />
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="date_voided" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="void_reason" type="text" />
 		</createTable>
-        <addForeignKeyConstraint constraintName="ardenreminders_item_owner_fk" baseTableName="ardenreminders_item" baseColumnNames="owner"  referencedTableName="users"
-                                 referencedColumnNames="user_id" />
-    </changeSet> -->
+    </changeSet>
  
 </databaseChangeLog>

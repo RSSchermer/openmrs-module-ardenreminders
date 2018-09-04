@@ -21,4 +21,12 @@
   		    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 	<context:component-scan base-package="org.openmrs.module.ardenreminders.web.controller" />
+
+	<bean id="ardenreminders.MlmTemplate" class="java.lang.String">
+		<constructor-arg>
+			<bean class="org.springframework.util.FileCopyUtils" factory-method="copyToByteArray">
+				<constructor-arg value="classpath:template.mlm" type="java.io.InputStream" />
+			</bean>
+		</constructor-arg>
+	</bean>
 </beans>

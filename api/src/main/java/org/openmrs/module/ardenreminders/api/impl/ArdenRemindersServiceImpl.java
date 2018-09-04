@@ -12,9 +12,11 @@ package org.openmrs.module.ardenreminders.api.impl;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.ardenreminders.Item;
+import org.openmrs.module.ardenreminders.Mlm;
 import org.openmrs.module.ardenreminders.api.ArdenRemindersService;
 import org.openmrs.module.ardenreminders.api.dao.ArdenRemindersDao;
+
+import java.util.List;
 
 public class ArdenRemindersServiceImpl extends BaseOpenmrsService implements ArdenRemindersService {
 	
@@ -37,16 +39,22 @@ public class ArdenRemindersServiceImpl extends BaseOpenmrsService implements Ard
 	}
 	
 	@Override
-	public Item getItemByUuid(String uuid) throws APIException {
-		return dao.getItemByUuid(uuid);
+	public List<Mlm> listMlms() throws APIException {
+		return dao.listMlms();
 	}
 	
 	@Override
-	public Item saveItem(Item item) throws APIException {
-		if (item.getOwner() == null) {
-			item.setOwner(userService.getUser(1));
-		}
-		
-		return dao.saveItem(item);
+	public Mlm getMlmByUuid(String uuid) throws APIException {
+		return dao.getMlmByUuid(uuid);
+	}
+	
+	@Override
+	public Mlm saveMlm(Mlm mlm) throws APIException {
+		return dao.saveMlm(mlm);
+	}
+	
+	@Override
+	public void deleteMlm(Mlm mlm) throws APIException {
+		dao.deleteMlm(mlm);
 	}
 }

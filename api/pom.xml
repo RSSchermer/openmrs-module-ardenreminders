@@ -11,4 +11,19 @@
 	<packaging>jar</packaging>
 	<name>Arden Reminders API</name>
 	<description>API project for Arden Reminders</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.arden2bytecode</groupId>
+			<artifactId>arden</artifactId>
+			<version>0.7.0</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>arden2bytecode</id>
+			<url>file:///${project.basedir}/../arden2bytecode</url>
+		</repository>
+	</repositories>
 </project>

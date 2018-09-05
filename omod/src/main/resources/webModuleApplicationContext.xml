@@ -22,6 +22,10 @@
 
 	<context:component-scan base-package="org.openmrs.module.ardenreminders.web.controller" />
 
+	<bean class="org.openmrs.ui.framework.StandardModuleUiConfiguration">
+		<property name="moduleId" value="ardenreminders"/>
+	</bean>
+
 	<bean id="ardenreminders.MlmTemplate" class="java.lang.String">
 		<constructor-arg>
 			<bean class="org.springframework.util.FileCopyUtils" factory-method="copyToByteArray">

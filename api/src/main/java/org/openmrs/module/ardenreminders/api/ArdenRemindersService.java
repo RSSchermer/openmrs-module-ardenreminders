@@ -14,6 +14,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.ardenreminders.ArdenRemindersConfig;
 import org.openmrs.module.ardenreminders.Mlm;
+import org.openmrs.module.ardenreminders.RunMlmsResults;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -24,31 +25,25 @@ import java.util.List;
  */
 public interface ArdenRemindersService extends OpenmrsService {
 	
+	@Authorized()
+	@Transactional(readOnly = true)
 	List<Mlm> listMlms() throws APIException;
 	
-	/**
-	 * Returns an item by uuid. It can be called by any authenticated user. It is fetched in read
-	 * only transaction.
-	 * 
-	 * @param uuid
-	 * @return
-	 * @throws APIException
-	 */
+	@Authorized()
+	@Transactional(readOnly = true)
+	List<Mlm> listEvocableMlms() throws APIException;
+	
 	@Authorized()
 	@Transactional(readOnly = true)
 	Mlm getMlmByUuid(String uuid) throws APIException;
 	
-	/**
-	 * Saves an item. Sets the owner to superuser, if it is not set. It can be called by users with
-	 * this module's privilege. It is executed in a transaction.
-	 * 
-	 * @param mlm
-	 * @return
-	 * @throws APIException
-	 */
 	@Authorized(ArdenRemindersConfig.MODULE_PRIVILEGE)
 	@Transactional
 	Mlm saveMlm(Mlm mlm) throws APIException;
 	
+	@Authorized(ArdenRemindersConfig.MODULE_PRIVILEGE)
+	@Transactional
 	void deleteMlm(Mlm mlm) throws APIException;
+	
+	RunMlmsResults generateReminders(int patientId) throws APIException;
 }

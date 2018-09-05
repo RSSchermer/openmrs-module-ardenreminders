@@ -11,18 +11,26 @@ package org.openmrs.module.ardenreminders.api.impl;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
+import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.ardenreminders.RunMlms;
 import org.openmrs.module.ardenreminders.Mlm;
+import org.openmrs.module.ardenreminders.RunMlmsResults;
 import org.openmrs.module.ardenreminders.api.ArdenRemindersService;
 import org.openmrs.module.ardenreminders.api.dao.ArdenRemindersDao;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ArdenRemindersServiceImpl extends BaseOpenmrsService implements ArdenRemindersService {
 	
 	ArdenRemindersDao dao;
 	
 	UserService userService;
+	
+	@Autowired
+	DbSessionFactory sessionFactory;
 	
 	/**
 	 * Injected in moduleApplicationContext.xml
@@ -44,6 +52,11 @@ public class ArdenRemindersServiceImpl extends BaseOpenmrsService implements Ard
 	}
 	
 	@Override
+	public List<Mlm> listEvocableMlms() throws APIException {
+		return dao.listEvocableMlms();
+	}
+	
+	@Override
 	public Mlm getMlmByUuid(String uuid) throws APIException {
 		return dao.getMlmByUuid(uuid);
 	}
@@ -56,5 +69,14 @@ public class ArdenRemindersServiceImpl extends BaseOpenmrsService implements Ard
 	@Override
 	public void deleteMlm(Mlm mlm) throws APIException {
 		dao.deleteMlm(mlm);
+	}
+	
+	@Override
+	public RunMlmsResults generateReminders(int patientId) throws APIException {
+		RunMlms work = new RunMlms(listEvocableMlms(), patientId);
+		
+		sessionFactory.getCurrentSession().doWork(work);
+		
+		return work.getResults();
 	}
 }

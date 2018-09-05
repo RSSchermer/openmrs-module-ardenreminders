@@ -9,10 +9,16 @@
  */
 package org.openmrs.module.ardenreminders;
 
+import arden.compiler.CompiledMlm;
+import arden.compiler.Compiler;
+import arden.compiler.CompilerException;
 import org.openmrs.BaseOpenmrsData;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * Please note that a corresponding table schema must be created in liquibase.xml.
@@ -38,8 +44,16 @@ public class Mlm extends BaseOpenmrsData {
 	private String source;
 	
 	@Basic
+	@Lob
+	@Column(name = "byte_code", length = 2 ^ 16)
+	private byte[] byteCode;
+	
+	@Basic
 	@Column(name = "evoke")
 	private Boolean evoke;
+	
+	@Transient
+	private CompiledMlm compiledCache;
 	
 	@Override
 	public Integer getId() {
@@ -77,11 +91,59 @@ public class Mlm extends BaseOpenmrsData {
 		this.source = source;
 	}
 	
+	public String getByteCode() {
+		return source;
+	}
+	
+	public void updateByteCode() throws CompilerException {
+		compiledCache = null;
+		CompiledMlm compiled = compile();
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+		try {
+			compiled.saveClassFile(outputStream);
+		}
+		catch (IOException e) {
+			// Should never happen
+			throw new RuntimeException(e);
+		}
+		
+		byteCode = outputStream.toByteArray();
+	}
+	
 	public Boolean getEvoke() {
 		return evoke;
 	}
 	
 	public void setEvoke(Boolean evoke) {
 		this.evoke = evoke;
+	}
+	
+	public CompiledMlm compiled() throws CompilerException {
+		if (compiledCache != null) {
+			return compiledCache;
+		}
+		
+		if (byteCode == null) {
+			compiledCache = compile();
+		} else {
+			compiledCache = new CompiledMlm(byteCode, name);
+		}
+		
+		return compiledCache;
+	}
+	
+	private CompiledMlm compile() throws CompilerException {
+		Compiler compiler = new Compiler();
+		
+		compiler.enableDebugging(name);
+		
+		try {
+			return compiler.compileMlm(new StringReader(source));
+		}
+		catch (IOException e) {
+			// Should never happen
+			throw new RuntimeException(e);
+		}
 	}
 }

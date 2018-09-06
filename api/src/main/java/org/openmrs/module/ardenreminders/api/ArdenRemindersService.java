@@ -45,5 +45,9 @@ public interface ArdenRemindersService extends OpenmrsService {
 	@Transactional
 	void deleteMlm(Mlm mlm) throws APIException;
 	
+	@Authorized(ArdenRemindersConfig.MODULE_PRIVILEGE)
+	@Transactional
+	void deleteMlmByUuid(String uuid) throws APIException;
+	
 	RunMlmsResults generateReminders(int patientId) throws APIException;
 }

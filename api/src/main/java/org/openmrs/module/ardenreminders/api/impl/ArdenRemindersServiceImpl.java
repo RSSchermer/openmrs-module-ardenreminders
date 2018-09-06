@@ -72,8 +72,13 @@ public class ArdenRemindersServiceImpl extends BaseOpenmrsService implements Ard
 	}
 	
 	@Override
+	public void deleteMlmByUuid(String uuid) throws APIException {
+		dao.deleteMlmByUuid(uuid);
+	}
+	
+	@Override
 	public RunMlmsResults generateReminders(int patientId) throws APIException {
-		RunMlms work = new RunMlms(listEvocableMlms(), patientId);
+		RunMlms work = new RunMlms(listEvocableMlms(), patientId, dao);
 		
 		sessionFactory.getCurrentSession().doWork(work);
 		

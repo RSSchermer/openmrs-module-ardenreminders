@@ -3,16 +3,21 @@ package org.openmrs.module.ardenreminders;
 import arden.compiler.CompilerException;
 import arden.runtime.*;
 import arden.runtime.evoke.CallTrigger;
+import arden.runtime.evoke.Trigger;
 import arden.runtime.jdbc.JDBCQuery;
 import org.hibernate.jdbc.Work;
+import org.openmrs.module.ardenreminders.api.dao.ArdenRemindersDao;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class RunMlms implements Work {
+	
+	private ArdenRemindersDao dao;
 	
 	private List<Mlm> mlms;
 	
@@ -20,14 +25,19 @@ public class RunMlms implements Work {
 	
 	private RunMlmsResults results;
 	
-	public RunMlms(List<Mlm> mlms, int patientId) {
+	public RunMlms(List<Mlm> mlms, int patientId, ArdenRemindersDao dao) {
 		this.mlms = mlms;
 		this.patientId = patientId;
+		this.dao = dao;
 	}
 	
 	@Override
 	public void execute(Connection connection) throws SQLException {
-		ArdenExecutionSession session = new ArdenExecutionSession(connection, patientId);
+		ArdenExecutionSession session = new ArdenExecutionSession(dao, connection, patientId);
+		
+		for (Mlm mlm : mlms) {
+			session.cacheMlm(mlm);
+		}
 		
 		for (Mlm mlm : mlms) {
 			session.runMlm(mlm);
@@ -42,6 +52,8 @@ public class RunMlms implements Work {
 	
 	private class ArdenExecutionSession extends ExecutionContext {
 		
+		private ArdenRemindersDao dao;
+		
 		private Connection connection;
 		
 		private int patientId;
@@ -50,9 +62,16 @@ public class RunMlms implements Work {
 		
 		private ArrayList<String> errors = new ArrayList<String>();
 		
-		public ArdenExecutionSession(Connection connection, int patientId) {
+		private HashMap<String, Mlm> mlmCache = new HashMap<String, Mlm>();
+		
+		public ArdenExecutionSession(ArdenRemindersDao dao, Connection connection, int patientId) {
+			this.dao = dao;
 			this.connection = connection;
 			this.patientId = patientId;
+		}
+		
+		public void cacheMlm(Mlm mlm) {
+			mlmCache.put(mlm.getName(), mlm);
 		}
 		
 		public void runMlm(Mlm mlm) {
@@ -77,6 +96,41 @@ public class RunMlms implements Work {
 		
 		public void write(ArdenValue message, ArdenValue destination, double urgency) {
 			messages.add(ArdenString.getStringFromValue(message));
+		}
+		
+		@Override
+		public MedicalLogicModule findModule(String name, String institution) {
+			Mlm mlm = mlmCache.get(name);
+			
+			if (mlm == null) {
+				mlm = dao.getMlmByName(name);
+				
+				if (mlm == null) {
+					throw new RuntimeException("Could not find MLM `" + name + "`");
+				}
+				
+				cacheMlm(mlm);
+			}
+			
+			try {
+				return mlm.compiled();
+			}
+			catch (CompilerException e) {
+				throw new RuntimeException("Failed to compile MLM `" + name + "`: " + e.getMessage());
+			}
+		}
+		
+		@Override
+		public void call(ArdenRunnable mlm, ArdenValue[] arguments, ArdenValue delay, Trigger callerTrigger, double urgency) {
+			long delayMillis = ExecutionContextHelpers.delayToMillis(delay);
+			Trigger calleeTrigger = ExecutionContextHelpers.combine(callerTrigger, delayMillis);
+			
+			try {
+				mlm.run(this, arguments, calleeTrigger);
+			}
+			catch (InvocationTargetException e) {
+				throw new RuntimeException("Error while running CALLed MLM: " + e.getCause().getMessage());
+			}
 		}
 		
 		private class RunMlmsResultsImpl implements RunMlmsResults {

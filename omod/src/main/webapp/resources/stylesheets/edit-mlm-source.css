@@ -1,0 +1,28 @@
+.mlm-source-container .actions {
+    margin-bottom: 10px;
+}
+
+.mlm-source-container .CodeMirror, .mlm-source-container .compiler-output {
+    height: 800px;
+    border: 1px solid #888;
+}
+
+.mlm-source-container .compiler-output {
+    background-color: #eee;
+    padding: 0 5px;
+    overflow-y: scroll;
+}
+
+.mlm-source-container .editor-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.mlm-source-container .source-container {
+    flex: 3;
+}
+
+.mlm-source-container .compiler-output-container {
+    flex: 1;
+    min-width: 300px;
+}

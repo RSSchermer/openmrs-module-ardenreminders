@@ -9,6 +9,7 @@
  */
 package org.openmrs.module.ardenreminders.web.controller;
 
+import arden.compiler.CompilerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.UserService;
@@ -20,14 +21,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller("${rootrootArtifactid}.ArdenRemindersManageController")
 @RequestMapping(value = "module/ardenreminders/manage")
@@ -60,6 +60,13 @@ public class ArdenRemindersManageController {
 		return "/module/ardenreminders/manage/mlmView";
 	}
 	
+	@RequestMapping(value = "mlms/{uuid}.htm", method = RequestMethod.DELETE)
+	public String deleteMlm(@PathVariable String uuid) {
+		ardenRemindersService.deleteMlmByUuid(uuid);
+		
+		return "/module/ardenreminders/manage/mlmView";
+	}
+	
 	@RequestMapping(value = "mlms/new.form", method = RequestMethod.GET)
 	public String newMlm(Model model) {
 		model.addAttribute("mlm", new Mlm());
@@ -79,8 +86,66 @@ public class ArdenRemindersManageController {
 		        .replaceAll("__DATE__", new SimpleDateFormat("yyyy-mm-dd").format(new Date()));
 		
 		mlm.setSource(source);
+		
+		try {
+			mlm.updateByteCode();
+		}
+		catch (CompilerException e) {
+			// Should never happen, indicates bug in resources/template.mlm or the placeholder substitution code above
+			// (programmer error)
+			throw new RuntimeException(e);
+		}
+		
 		ardenRemindersService.saveMlm(mlm);
 		
 		return String.format("redirect:/module/ardenreminders/manage/mlms/%s.htm", mlm.getUuid());
+	}
+	
+	@RequestMapping(value = "mlms/{uuid}/edit_source.htm", method = RequestMethod.GET)
+	public String editMlmSource(@PathVariable String uuid, Model model) {
+		model.addAttribute("mlm", ardenRemindersService.getMlmByUuid(uuid));
+		
+		return "/module/ardenreminders/manage/editMlmSource";
+	}
+	
+	@RequestMapping(value = "mlms/{uuid}/check_source.json", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public Map<String, String> checkMlmSource(@PathVariable String uuid, @RequestParam String source) {
+		HashMap<String, String> response = new HashMap<String, String>();
+		Mlm mlm = ardenRemindersService.getMlmByUuid(uuid);
+		
+		mlm.setSource(source);
+		
+		try {
+			mlm.updateByteCode();
+			response.put("output", "Success!");
+			
+		}
+		catch (CompilerException e) {
+			response.put("output", e.getMessage());
+		}
+		
+		return response;
+	}
+	
+	@RequestMapping(value = "mlms/{uuid}/save_source.json", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public Map<String, String> saveMlmSource(@PathVariable String uuid, @RequestParam String source) {
+		HashMap<String, String> response = new HashMap<String, String>();
+		Mlm mlm = ardenRemindersService.getMlmByUuid(uuid);
+		
+		mlm.setSource(source);
+		
+		try {
+			mlm.updateByteCode();
+			response.put("output", "Success!");
+		}
+		catch (CompilerException e) {
+			response.put("output", e.getMessage());
+		}
+		
+		ardenRemindersService.saveMlm(mlm);
+		
+		return response;
 	}
 }

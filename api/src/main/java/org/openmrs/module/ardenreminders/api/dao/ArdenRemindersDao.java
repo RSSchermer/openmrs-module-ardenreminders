@@ -40,6 +40,10 @@ public class ArdenRemindersDao {
 		return (Mlm) getSession().createCriteria(Mlm.class).add(Restrictions.eq("uuid", uuid)).uniqueResult();
 	}
 	
+	public Mlm getMlmByName(String name) {
+		return (Mlm) getSession().createCriteria(Mlm.class).add(Restrictions.eq("name", name)).uniqueResult();
+	}
+	
 	public Mlm saveMlm(Mlm mlm) {
 		getSession().saveOrUpdate(mlm);
 		
@@ -47,6 +51,12 @@ public class ArdenRemindersDao {
 	}
 	
 	public void deleteMlm(Mlm mlm) {
+		getSession().delete(mlm);
+	}
+	
+	public void deleteMlmByUuid(String uuid) {
+		Mlm mlm = getMlmByUuid(uuid);
+		
 		getSession().delete(mlm);
 	}
 }

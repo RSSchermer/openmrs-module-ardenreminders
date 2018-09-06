@@ -1,0 +1,20 @@
+.actions {
+    margin-bottom: 20px;
+}
+
+.mlms-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mlms-table thead th {
+    border-bottom: 2px solid #ccc;
+}
+
+.mlms-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.mlms-table tbody td, .mlms-table thead th {
+    padding: 10px;
+}

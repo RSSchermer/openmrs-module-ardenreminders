@@ -97,18 +97,26 @@ public class Mlm extends BaseOpenmrsData {
 	
 	public void updateByteCode() throws CompilerException {
 		compiledCache = null;
-		CompiledMlm compiled = compile();
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		
 		try {
-			compiled.saveClassFile(outputStream);
+			CompiledMlm compiled = compile();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			
+			try {
+				compiled.saveClassFile(outputStream);
+			}
+			catch (IOException e) {
+				// Should never happen, we're not actually doing IO
+				throw new RuntimeException(e);
+			}
+			
+			byteCode = outputStream.toByteArray();
 		}
-		catch (IOException e) {
-			// Should never happen
-			throw new RuntimeException(e);
+		catch (CompilerException e) {
+			byteCode = null;
+			
+			throw e;
 		}
-		
-		byteCode = outputStream.toByteArray();
 	}
 	
 	public Boolean getEvoke() {
@@ -142,7 +150,7 @@ public class Mlm extends BaseOpenmrsData {
 			return compiler.compileMlm(new StringReader(source));
 		}
 		catch (IOException e) {
-			// Should never happen
+			// Should never happen, we're not actually doing IO
 			throw new RuntimeException(e);
 		}
 	}

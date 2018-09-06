@@ -42,7 +42,7 @@ block will be replaced with the patient's ID, thus allowing for patient-specific
 ...
 
 data:
-    patientExists := READ EXIST { SELECT * FROM patient WHERE patient_id=__CURRENT_PATIENT_ID__; };
+    patient_exists := READ EXIST { SELECT * FROM patient WHERE patient_id=__CURRENT_PATIENT_ID__; };
     
     ...
 ;;

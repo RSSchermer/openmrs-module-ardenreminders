@@ -4,7 +4,8 @@
 
 OMOD module for [OpenMRS](https://openmrs.org/). Provides very basic decision support as Clinical Reminders on the 
 Patient Dashboard, generated from [Arden Medical Logic Modules](https://en.wikipedia.org/wiki/Arden_syntax) (version 
-2.5) through [Arden2ByteCode](http://plri.github.io/arden2bytecode/).
+2.5) through [Arden2ByteCode](http://plri.github.io/arden2bytecode/). Intended for educational purposes, not for
+clinical use.
 
 ## Building from Source
 

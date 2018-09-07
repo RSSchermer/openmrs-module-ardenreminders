@@ -1,0 +1,41 @@
+#ardenreminders_error_dialog {
+    display: none;
+    position: absolute;
+    top: 15%;
+    width: 600px;
+    left: 50%;
+    margin-left: -300px;
+}
+
+#ardenreminders_error_dialog ul {
+    height: 300px;
+    overflow-y: scroll;
+    color: darkred;
+    margin-top: 20px;
+}
+
+body {
+    position: relative;
+}
+
+.ardenreminders .errors-note-container {
+    color: #ffa000;
+    background-color: #fffdf0;
+    border: 1px solid #ffa000;
+    display: flex;
+    flex-direction: row;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.ardenreminders .errors-note-container .icon {
+    display: block;
+    margin-right: 15px;
+}
+
+.ardenreminders .errors-note-container p {
+    flex: 1;
+}

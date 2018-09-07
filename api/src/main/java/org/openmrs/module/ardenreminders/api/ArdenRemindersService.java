@@ -37,6 +37,10 @@ public interface ArdenRemindersService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	Mlm getMlmByUuid(String uuid) throws APIException;
 	
+	@Authorized()
+	@Transactional(readOnly = true)
+	Mlm getMlmByName(String name) throws APIException;
+	
 	@Authorized(ArdenRemindersConfig.MODULE_PRIVILEGE)
 	@Transactional
 	Mlm saveMlm(Mlm mlm) throws APIException;

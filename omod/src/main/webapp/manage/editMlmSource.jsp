@@ -2,30 +2,15 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
-<openmrs:htmlInclude file="/moduleResources/ardenreminders/stylesheets/codemirror.css"/>
-<openmrs:htmlInclude file="/moduleResources/ardenreminders/stylesheets/edit-mlm-source.css"/>
+<openmrs:htmlInclude file="/moduleResources/ardenreminders/styles/codemirror.css"/>
+<openmrs:htmlInclude file="/moduleResources/ardenreminders/styles/edit-mlm-source.css"/>
 
-<h2><spring:message code="ardenreminders.viewing_mlm" /></h2>
-
-<div class="mlm-attributes-container">
-    <h3><spring:message code="ardenreminders.mlm_attributes" /></h3>
-
-    <div class="attribute">
-        Name: ${mlm.name}
-    </div>
-
-    <div class="attribute">
-        Evoke: ${mlm.evoke}
-    </div>
-</div>
+<h2><spring:message code="ardenreminders.edit_mlm_source.container_title" /></h2>
 
 <div class="mlm-source-container">
-    <h3><spring:message code="ardenreminders.edit_mlm_source.container_title" /></h3>
-
     <div class="actions">
-        <button id="check_button"><spring:message code="ardenreminders.edit_mlm_source.check" /></button>
         <button id="save_button"><spring:message code="ardenreminders.edit_mlm_source.save" /></button>
-        <button id="save_and_close_button"><spring:message code="ardenreminders.edit_mlm_source.save_and_close" /></button>
+        <button id="check_button"><spring:message code="ardenreminders.edit_mlm_source.check" /></button>
         <button id="close_without_saving_button"><spring:message code="ardenreminders.edit_mlm_source.close_without_saving" /></button>
     </div>
 
@@ -61,17 +46,14 @@
         };
 
         document.getElementById("save_button").onclick = function () {
-            jQuery.post("save_source.json", { source: editor.getValue() }, processCompilerOutputResponse);
-        };
-
-        document.getElementById("save_and_close_button").onclick = function () {
-            jQuery.post("save_source.json", { source: editor.getValue() }, function () {
-                window.location.href = "../${mlm.uuid}.htm";
+            jQuery.post("save_source.json", { source: editor.getValue() }, function (response) {
+                processCompilerOutputResponse(response);
+                editor.markClean();
             });
         };
 
         document.getElementById("close_without_saving_button").onclick = function () {
-            if (confirm("Are you sure? Any unsaved changes will be lost.")) {
+            if (editor.isClean() || confirm("Are you sure? You have unsaved changes that will be lost.")) {
                 window.location.href = "../${mlm.uuid}.htm";
             }
         };

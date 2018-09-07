@@ -18,3 +18,13 @@
 .mlms-table tbody td, .mlms-table thead th {
     padding: 10px;
 }
+
+.does-compile, .evoke-enabled {
+    font-weight: bold;
+    color: darkgreen;
+}
+
+.does-not-compile, .evoke-disabled {
+    font-weight: bold;
+    color: darkred;
+}

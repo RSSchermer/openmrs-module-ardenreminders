@@ -62,6 +62,11 @@ public class ArdenRemindersServiceImpl extends BaseOpenmrsService implements Ard
 	}
 	
 	@Override
+	public Mlm getMlmByName(String name) throws APIException {
+		return dao.getMlmByName(name);
+	}
+	
+	@Override
 	public Mlm saveMlm(Mlm mlm) throws APIException {
 		return dao.saveMlm(mlm);
 	}

@@ -33,7 +33,8 @@ public class ArdenRemindersDao {
 	}
 	
 	public List<Mlm> listEvocableMlms() {
-		return (List<Mlm>) getSession().createCriteria(Mlm.class).add(Restrictions.eq("evoke", true)).list();
+		return (List<Mlm>) getSession().createCriteria(Mlm.class).add(Restrictions.eq("evoke", true))
+		        .add(Restrictions.eq("compiles", true)).list();
 	}
 	
 	public Mlm getMlmByUuid(String uuid) {

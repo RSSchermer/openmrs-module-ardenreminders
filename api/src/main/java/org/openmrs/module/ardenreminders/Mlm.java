@@ -52,6 +52,10 @@ public class Mlm extends BaseOpenmrsData {
 	@Column(name = "evoke")
 	private Boolean evoke;
 	
+	@Basic
+	@Column(name = "compiles")
+	private Boolean compiles;
+	
 	@Transient
 	private CompiledMlm compiledCache;
 	
@@ -95,11 +99,14 @@ public class Mlm extends BaseOpenmrsData {
 		return source;
 	}
 	
-	public void updateByteCode() throws CompilerException {
+	public void updateFromSource() throws CompilerException {
 		compiledCache = null;
 		
 		try {
 			CompiledMlm compiled = compile();
+			
+			name = compiled.getMaintenance().getMlmName();
+			
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			
 			try {
@@ -111,9 +118,11 @@ public class Mlm extends BaseOpenmrsData {
 			}
 			
 			byteCode = outputStream.toByteArray();
+			compiles = true;
 		}
 		catch (CompilerException e) {
 			byteCode = null;
+			compiles = false;
 			
 			throw e;
 		}
@@ -125,6 +134,14 @@ public class Mlm extends BaseOpenmrsData {
 	
 	public void setEvoke(Boolean evoke) {
 		this.evoke = evoke;
+	}
+	
+	public Boolean getCompiles() {
+		return compiles;
+	}
+	
+	public void setCompiles(Boolean compiles) {
+		this.compiles = compiles;
 	}
 	
 	public CompiledMlm compiled() throws CompilerException {

@@ -34,6 +34,7 @@
             <column name="source" type="clob" />
 			<column name="byte_code" type="blob" />
             <column name="evoke" type="boolean" defaultValueBoolean="false" />
+			<column name="compiles" type="boolean" defaultValueBoolean="false" />
 			<column name="creator" type="int">
 				<constraints nullable="false" />
 			</column>

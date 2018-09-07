@@ -20,7 +20,7 @@ knowledge:
 
     data:
         // __CURRENT_PATIENT_ID__ will be replaced with the current patient's ID by the runtime
-        patientExists := READ EXIST { SELECT * FROM patient WHERE patient_id=__CURRENT_PATIENT_ID__; }
+        patientExists := READ EXIST { SELECT * FROM patient WHERE patient_id=__CURRENT_PATIENT_ID__; };
     ;;
 
     evoke:
